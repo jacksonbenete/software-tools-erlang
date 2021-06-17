@@ -34,3 +34,7 @@ State;
 getf(Input, State) ->
 NextInput = getc(),
 getf(NextInput, lists:concat([State, Input])).
+
+%% putf - put formated data on standard output
+putf(Data) ->
+io:format(Data).
