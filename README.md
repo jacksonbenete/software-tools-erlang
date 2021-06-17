@@ -1,6 +1,10 @@
 # Software Tools in Erlang
 This is an implementation of various Unix common tools, as taught on `Software Tools in Pascal` by Kernighan and Plauger. This is my interpretation of a Erlang implementation.
 
+## Important
+You need to compile `ststd.erl` first before trying any tools, as almost or all of them will make heavy use of functions like `getc` and `putc`.
+
+## File Structure
 There are redundant files.
 All the tools can be found on `stcn.erl` files, where `n` is the chapter number. So you can compile and call the stc1 module to have all chapter one tools in one place.
 That's easier than having to compile each single tool separately.
