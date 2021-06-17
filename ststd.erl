@@ -35,6 +35,6 @@ getf(Input, State) ->
 NextInput = getc(),
 getf(NextInput, lists:concat([State, Input])).
 
-%% putf - put formated data on standard output
-putf(Data) ->
-io:format(Data).
+%% putf - put formatted data on standard output
+putf(Format, Data) ->
+io:format(Format, Data).
