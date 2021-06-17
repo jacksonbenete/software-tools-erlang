@@ -22,11 +22,13 @@ io:get_line("").
 putc(C) ->
 io:put_chars(C).
 
-%% getf -- like copy but return complete state.
+%% getf -- keep reading from standard input until eof or `.\n`
 getf() ->
 Input = getc(),
 getf(Input, "").
 
+getf(eof, State) ->
+State;
 getf(".\n", State) ->
 State;
 getf(Input, State) ->
