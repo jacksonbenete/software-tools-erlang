@@ -1,0 +1,29 @@
+#!/usr/bin/escript
+
+%% copy -- copy input to output
+%%
+%% We're not defining primitives like in the book,
+%% We can't detect ENDFILE with io:get_line/1, and
+%% it already receive only one line so no need to
+%% detect ASCII NEWLINE as well.
+%%
+%% Since we can't detect ENDFILE, we can mimic ed(1)
+%% behavior so that a "." in an empty line will quit.
+%%
+%% Correction: we can't detect ENDFILE in Erlang Shell,
+%% but when running from terminal as an escript program,
+%% you can pattern match Ctrl-D as eof.
+copy() ->
+Input = ststd:getc(),
+copy(Input).
+
+copy(eof) ->
+{ok, eof};
+copy(".\n") ->
+{ok, eof};
+copy(Input) ->
+ststd:putc(Input),
+copy().
+
+main(_) ->
+copy().

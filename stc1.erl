@@ -10,10 +10,16 @@
 %%
 %% Since we can't detect ENDFILE, we can mimic ed(1)
 %% behavior so that a "." in an empty line will quit.
+%%
+%% Correction: we can't detect ENDFILE in Erlang Shell,
+%% but when running from terminal as an escript program,
+%% you can pattern match Ctrl-D as eof.
 copy() ->
 Input = ststd:getc(),
 copy(Input).
 
+copy(eof) ->
+{ok, eof};
 copy(".\n") ->
 {ok, eof};
 copy(Input) ->
