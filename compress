@@ -1,0 +1,58 @@
+#!/usr/bin/escript
+
+%% compress -- compress standard input
+%%
+%% BUGS
+%% The escape symbol should be passed down instead of written
+%% directly on Pattern Matching.
+%% The problem is that we can't call a function inside Pattern,
+%% and I didn't wanted to increase the function arity only for
+%% a constant value.
+%%
+%% Runs longer than 26 character aren't being broken into sev.
+%% shorter ones, but this should be easy to correct.
+compress(Input) ->
+compress(Input, [], 0, []).
+
+compress([], Char, Count, Acc) ->
+StateList = putrep(Char, Count),
+Result = lists:concat([Acc, StateList]),
+ststd:putf("~p~n", [Result]);
+compress([126|T], Char, Count, Acc) ->
+% ~ it's a run of itself of lenght 1
+StateList = putrep(Char, Count),
+compress(T, [], 0, lists:concat([Acc, StateList, [126, 65, 126]]));
+compress([H|T], Char, Count, Acc) when H =/= Char ->
+compress(T, H, 1, lists:concat([Acc, putrep(Char, Count)]));
+compress([_|T], Char, Count, Acc) ->
+compress(T, Char, Count+1, Acc).
+%% putrep -- put out representations of run of n 'c's
+%%
+%% BUGS
+%% This one isn't a exactly copy of the Pascal version.
+%% This should use a constant instead of the escaping value 126.
+putrep(Char, Count) ->
+case Count >= thresh() of
+  true -> [126, init_symbol() + Count, Char];
+  false -> lists:map(fun(_) -> Char end, lists:seq(1, Count))
+end.
+
+%% init_symbol -- get the firs symbol for count repetitions
+%%
+%% This is a abstraction instead of using letter 'A' directly.
+init_symbol() ->
+Symbol = 64,  % ASCII 64 = @, next one is 'A'
+Symbol.
+
+%% thresh -- return the threshold for repetitions to compress
+thresh() ->
+Threshold = 4,
+Threshold.
+
+main([]) ->
+Input = ststd:getf(),
+compress(Input);
+main(Arg) ->
+{ok, Bin} = file:read_file(Arg),
+File = erlang:binary_to_list(Bin),
+compress(File).
