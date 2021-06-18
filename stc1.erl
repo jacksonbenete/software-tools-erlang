@@ -28,23 +28,28 @@ copy().
 
 %% charcount -- count characters in standard input
 charcount() ->
-Input = ststd:getc(),
+Input = ststd:getf(),
 charcount(Input, 0).
 
+charcount(eof, Acc) ->
+ststd:putf("~w~n", [Acc]);
 charcount([], Acc) ->
-Acc;
+charcount(eof, Acc);
 charcount([_|T], Acc) ->
 charcount(T, Acc + 1).
 
 %% linecount -- count lines in standard input
+%%
+%% Since Erlang "String" is an array of numbers,
+%% We can detect "\n" as ASCII 10.
 linecount() ->
 Input = ststd:getf(),
 linecount(Input, 0).
 
+linecount(eof, Acc) ->
+ststd:putf("~w~n", [Acc]);
 linecount([], Acc) ->
-Acc;
-% Since Erlang "String" is an array of numbers,
-% We can detect "\n" as ASCII 10.
+linecount(eof, Acc);
 linecount([10|T], Acc) ->
 linecount(T, Acc + 1);
 linecount([_|T], Acc) ->
@@ -53,12 +58,18 @@ linecount(T, Acc).
 %% wordcount -- count words in standard input
 %%
 %% ASCII Blank = 32, Newline = 10, Tab = 9.
+%%
+%% BUGS
+%% If Ctrl-D during a word, will not count such a word.
 wordcount() ->
 Input = ststd:getf(),
 wordcount(Input, false, 0).
 
+wordcount(eof, Acc) ->
+ststd:putf("~w~n", [Acc]).
+
 wordcount([], _, Acc) ->
-Acc;
+wordcount(eof, Acc);
 wordcount([H|T], inword, Acc) ->
 case lists:member(H, [9, 10, 32]) of
   true -> wordcount(T, false, Acc + 1);
@@ -75,9 +86,12 @@ end.
 %% BUGS
 %% It doesn't print the name of the file as of yet.
 putwc(ArgList) ->
-io:format(" ~w ~w ~w~n", ArgList).
+ststd:putf(" ~w ~w ~w~n", ArgList).
 
 %% wc -- count words, lines and characters
+%%
+%% BUGS
+%% If Ctrl-D during a word, will not count word or curent line.
 wc() ->
 Input = ststd:getf(),
 wc(Input, false, 0, 0, 0).
@@ -128,11 +142,10 @@ Input = ststd:getf(),
 detab(Input, 0, []).
 
 detab([], _, Acc) ->
-Acc;
+ststd:putf("~p~n", [Acc]);
 detab([9|T], Col, Acc) ->
 Feed = tabpos(Col),
 Blanks = lists:map(fun(_) -> 32 end, lists:seq(1, Feed)),
 detab(T, Col+Feed, lists:concat([Acc, Blanks]));
 detab([H|T], Col, Acc) ->
 detab(T, Col+1, lists:concat([Acc, [H]])).
-
