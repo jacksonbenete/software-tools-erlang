@@ -1,0 +1,94 @@
+#!/usr/bin/escript
+
+%% translit -- map characters
+translit([FromSet, ToSet, File]) ->
+Map = mpattern(FromSet, ToSet),
+%io:format("~n~p~n", [Map]),  % debug
+translit(File, Map, []).
+
+translit([], _, Acc) ->
+iotype({output, file, Acc});
+translit([H|T], Map, Acc) ->
+case maps:find(H, Map) of
+  {ok, Change} -> translit(T, Map, lists:concat([Acc, [Change]]));
+  error -> translit(T, Map, lists:concat([Acc, [H]]))
+end.
+
+%% squashing -- substitute pattern for a single symbol
+%%
+%% Generate special Map, and reuses translit/3
+squashing([FromSet, ToSet, File]) ->
+CharList = lists:map(fun(_) -> ToSet end, lists:seq(1, erlang:length(FromSet))),
+Map = mpattern(FromSet, CharList),
+%io:format("~n~p~n", [Map]),  % debug
+translit(File, Map, []).
+
+%% deleteall -- delete all occurrences of pattern
+%%
+%% Generate special Map, and reuses translit/3
+deleteall([FromSet, File]) ->
+BlankList = lists:map(fun(_) -> [] end, lists:seq(1, erlang:length(FromSet))),
+Map = mpattern(FromSet, BlankList),
+%io:format("~n~p~n", [Map]),  % debug
+translit(File, Map, []).
+
+%% mpattern -- transform two Args (chars or lists) into a map
+mpattern(FromSet, ToSet) ->
+maps:from_list(lists:zip(FromSet, ToSet)).
+
+%% parse -- detect pattern and return list
+parse([Letter|[]]) ->
+[Letter];
+parse([Base,45,End|[]]) ->
+List = lists:seq(Base,End),
+List;
+parse([Base,45,End|T]) ->
+List = lists:seq(Base, End),
+Tail = parse(T),
+lists:concat([List, Tail]).
+
+%% iotype -- abstract input type from File argument
+%%
+%% BUGS
+%% If file (Name) doesn't exists, will fail and might scream.
+iotype({file, Name}) ->
+case file:read_file(Name) of
+  {ok, Bin} -> erlang:binary_to_list(Bin);
+  {error, enoent} -> {error, enoent}
+end;
+iotype({output, file, Acc}) ->
+Bin = erlang:list_to_binary(Acc),
+file:write_file("output", Bin).
+
+%% main -- receive and parse args
+main([]) ->
+halt(1);
+
+main([_|[]]) ->
+halt(1);
+
+%% Arg1 = pattern
+%% Arg2 = file
+%% one pattern means to delete all occurrences on file
+main([Arg, File|[]]) ->
+FromSet = parse(Arg),
+Input = iotype({file, File}),
+deleteall([FromSet, Input]);
+
+%% Arg1 = pattern (fromset)
+%% Arg2 = pattern (toset)
+%% Arg3 = file
+main([Arg1, Arg2, File|[]]) ->
+FromSet = parse(Arg1),
+ToSet = parse(Arg2),
+%io:format("FromSet: ~p~nToSet: ~p", [FromSet, ToSet]),  % debug
+Input = iotype({file, File}),
+selector(FromSet, ToSet, Input).
+
+%% transliterate characters from Arg1[i] to Arg2[i]
+%% if Arg2 is shorter than Arg1, squash instead
+selector(FromSet,ToSet,File) when erlang:length(ToSet) < erlang:length(FromSet) ->
+squashing([FromSet, ToSet, File]);
+selector(FromSet, ToSet, File) ->
+translit([FromSet, ToSet, File]).
+
