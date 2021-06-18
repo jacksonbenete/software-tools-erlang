@@ -1,0 +1,30 @@
+#!/usr/bin/escript
+
+%% wordcount -- count words in standard input
+%%
+%% ASCII Blank = 32, Newline = 10, Tab = 9.
+%%
+%% BUGS
+%% If Ctrl-D during a word, will not count such a word.
+wordcount() ->
+Input = ststd:getf(),
+wordcount(Input, false, 0).
+
+wordcount(eof, Acc) ->
+ststd:putf("~w~n", [Acc]).
+
+wordcount([], _, Acc) ->
+wordcount(eof, Acc);
+wordcount([H|T], inword, Acc) ->
+case lists:member(H, [9, 10, 32]) of
+  true -> wordcount(T, false, Acc + 1);
+  false -> wordcount(T, inword, Acc)
+end;
+wordcount([H|T], _, Acc) ->
+case lists:member(H, [9, 10, 32]) of
+  true -> wordcount(T, false, Acc);
+  false -> wordcount(T, inword, Acc)
+end.
+
+main(_) ->
+wordcount().
