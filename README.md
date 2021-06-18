@@ -4,6 +4,8 @@ This is an implementation of various Unix common tools, as taught on `Software T
 ## Important
 You need to compile `ststd.erl` first before trying any tools, as almost or all of them will make heavy use of functions like `getc` and `putc`.
 
+Source files are currently lacking indentation since I'm testing a Erlang code formater. It will soon be fixed.
+
 ## File Structure
 There are redundant files.
 All the tools can be found on `stcN.erl` files, where `N` is the chapter number. So you can compile and call the stc1 module to have all chapter one tools in one place.
