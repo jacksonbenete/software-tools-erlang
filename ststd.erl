@@ -38,3 +38,19 @@ getf(NextInput, lists:concat([State, Input])).
 %% putf - put formatted data on standard output
 putf(Format, Data) ->
 io:format(Format, Data).
+%% iotype -- abstract input type from File argument
+%%
+%% BUGS
+%% If file (Name) doesn't exists, will fail and might scream.
+io({input, file}, Name) ->
+case file:read_file(Name) of
+  {ok, Bin} -> erlang:binary_to_list(Bin);
+  {error, enoent} -> {error, enoent}
+end;
+io({output, file}, Acc) ->
+Bin = erlang:list_to_binary(Acc),
+file:write_file("output", Bin).
+
+io({output, file}, Filename, Acc) ->
+Bin = erlang:list_to_binary(Acc),
+file:write_file(Filename, Bin).
