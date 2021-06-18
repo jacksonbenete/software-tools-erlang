@@ -26,6 +26,7 @@ compress([H|T], Char, Count, Acc) when H =/= Char ->
 compress(T, H, 1, lists:concat([Acc, putrep(Char, Count)]));
 compress([_|T], Char, Count, Acc) ->
 compress(T, Char, Count+1, Acc).
+
 %% putrep -- put out representations of run of n 'c's
 %%
 %% BUGS
