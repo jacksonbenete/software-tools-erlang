@@ -1,0 +1,19 @@
+#!/usr/bin/escript
+
+%% echo -- echo command line arguments to output
+%%
+%% The reason for the echo([H|[]]) case is that we don't
+%% want to print a blank space if H is the last arg.
+%% This way, `echo hello world!` and `./echo hello world!`
+%% will return the same input, confirmed by the diff tool.
+echo([]) ->
+io:format("~n");
+echo([H|[]]) ->
+io:format("~s", [H]),
+echo([]);
+echo([H|T]) ->
+io:format("~s ", [H]),
+echo(T).
+
+main(Args) ->
+echo(Args).
