@@ -30,7 +30,7 @@ entab(Input) ->
 entab(Input, 0, []).
 
 entab([], _, Acc) ->
-Acc;
+ststd:putf("~p~n", [Acc]);
 %% Blank/Whitespace = ASCII 32
 entab([32|T], Blanks, Acc) ->
 TabSize = settabs(),
@@ -51,16 +51,27 @@ entab(T, 0, lists:concat([Acc, BlanksList, [H]])).
 %% Also, Erlang inputs don't handle backspace \b or [8].
 %% What overstrike is doing here is to mimick the output
 %% from the book example, which is basically a underline.
+%%
+%% Correction: erlang shell can't handle backspace,
+%% in terminal a backspace will be returned as `\b`,
+%% and parsed as a blankspace in Erlang, instead of
+%% deleting the last character (Pascal behavior).
+%%
+%% A Ctrl-D amid a word will break the program,
+%% a Ctrl-D in a new (empty) line will finish the
+%% program correctly.
 overstrike(Input) ->
-overstrike(Input, lists:concat([Input, "\n"])).
+overstrike(Input, [], []).
 
-overstrike([], Acc) ->
-Acc;
-overstrike([H|T], Acc) ->
-case H =:= 32 of
-  true -> overstrike(T, lists:concat([Acc, [H]]));
-  false -> overstrike(T, lists:concat([Acc, "_"]))
-end.
+overstrike([], [], Acc) ->
+file:write_file("tmp", erlang:list_to_binary(Acc)),
+ststd:putf("~p~n", [Acc]);
+overstrike([32|T], OverList, Acc) ->
+overstrike(T, lists:concat([OverList, [32]]), lists:concat([Acc, [32]]));
+overstrike([10|T], OverList, Acc) ->
+overstrike(T, [], lists:concat([Acc, [10], OverList, [10]]));
+overstrike([H|T], OverList, Acc) ->
+overstrike(T, lists:concat([OverList, "_"]), lists:concat([Acc, [H]])).
 
 %% compress -- compress standard input
 %%
@@ -78,7 +89,8 @@ compress(Input, [], 0, []).
 
 compress([], Char, Count, Acc) ->
 StateList = putrep(Char, Count),
-lists:concat([Acc, StateList]);
+Result = lists:concat([Acc, StateList]),
+ststd:putf("~p~n", [Result]);
 compress([126|T], Char, Count, Acc) ->
 % ~ it's a run of itself of lenght 1
 StateList = putrep(Char, Count),
@@ -120,7 +132,7 @@ Base = init_symbol(),
 expand(Input, Base, []).
 
 expand([], _, Acc) ->
-Acc;
+ststd:putf("~p~n", [Acc]);
 expand([126, Count, Char|T], Base, Acc) when Count >= 65 andalso Count =< 122 ->
 Finding = lists:map(fun(_) -> Char end, lists:seq(1, Count - Base)),
 expand(T, Base, lists:concat([Acc, Finding]));
