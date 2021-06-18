@@ -42,7 +42,7 @@ detab(T, Col+1, lists:concat([Acc, [H]])).
 
 main([]) ->
 detab();
-main(Input) ->
-{ok, Bin} = file:read_file(Input),
+main(Arg) ->
+{ok, Bin} = file:read_file(Arg),
 File = erlang:binary_to_list(Bin),
 detab(File, 0, []).
