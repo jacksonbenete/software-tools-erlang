@@ -30,5 +30,9 @@ wc([H|T], _, WC, LC, CC) ->
     false -> wc(T, inword, WC, LC, CC+1)
 end.
 
-main(_) ->
-wc().
+main([]) ->
+wc();
+main(Arg) ->
+{ok, Bin} = file:read_file(Arg),
+File = erlang:binary_to_list(Bin),
+wc(File, false, 0, 0, 0).
