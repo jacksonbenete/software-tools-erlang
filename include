@@ -1,0 +1,30 @@
+#!/usr/bin/escript
+
+%% include -- replace #include "file" by contents of file
+%%
+%% BUGS
+%% By using string:tokens(File, "\n"), empty lines will be lost.
+include([], Acc) ->
+    ststd:io({output, file}, "include_temp", Acc);
+include([H|T], Acc) ->
+    include(T, lists:concat([Acc, parse_line(H)])).
+
+%% parse_line -- detect if it's a #include line
+parse_line([35, $i, $n, $c, $l, $u, $d, $e, 32|T]) ->
+    case get_file(T) of
+        {ok, FileContent} -> FileContent
+    end;
+parse_line(Line) ->
+    Line++"\n".
+
+%% get_file -- primitive to recover content of #include files
+get_file(File) ->
+    Content = ststd:io({input, file}, File),
+    {ok, Content}.
+
+main([]) ->
+    ststd:putc("You need to provide a filename as argument");
+main([Arg|_]) ->
+    {ok, File} = get_file(Arg),
+    List = string:tokens(File, "\n"),
+    include(List, []).
