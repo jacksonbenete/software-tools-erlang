@@ -15,3 +15,6 @@ In those files there is a `-compile(export_all)` flag that helps in testing func
 Using a function from the `stcN` packages inside repl means entering the Input yourself through an arity 0 function, or passing an Input through an arity 1 function.
 
 All the tools will be provided as escript as well, when possible, to accept command line arguments such as a filename, or to receive input from terminal.
+
+## Todo
+- translit still needs to implement `^` (all but), and `@` (escape characters). Shouldn't be difficult but might need another approach than maps.
