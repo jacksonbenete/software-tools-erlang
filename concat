@@ -1,0 +1,21 @@
+#!/usr/bin/escript
+
+%% concat -- concatenate files onto standard output
+concat([]) ->
+    halt(1);
+concat([H|T]) ->
+    File = ststd:io({input, file}, H),
+    fcopy(File),
+    concat(T).
+
+%% fcopy -- copy file fin to file fout
+fcopy([]) ->
+    {ok, fcopy};
+fcopy([H|T]) ->
+    ststd:putc([H]),
+    fcopy(T).
+
+main([]) ->
+    halt(1);
+main(Args) ->
+    concat(Args).
