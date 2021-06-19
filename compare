@@ -1,0 +1,46 @@
+#!/usr/bin/escript
+
+%% compare (simple version) -- compare two files for equality
+compare(File1, File2) ->
+    List1 = string:tokens(File1, "\n"),
+    List2 = string:tokens(File2, "\n"),
+    compare(List1, List2, 1).
+
+compare([], [], _) ->
+    halt(1);
+compare([], _, _) ->
+    ststd:putc("compare: end of file on file1");
+compare(_, [], _) ->
+    ststd:putc("compare: end of file on file2");
+compare([H1|T1], [H2|T2], Counter) ->
+    case equal(H1, H2) of
+        true -> compare(T1, T2, Counter+1);
+        false -> diffmsg(H1, H2, Counter),
+                 compare(T1, T2, Counter+1)
+    end.
+
+%% diffmsg -- print line numbers and differing lines
+diffmsg(File1, File2, Counter) ->
+    ststd:putf("~p:~n~s~n~s~n", [Counter, File1, File2]).
+
+%% equal -- test two strings for equality
+equal([], []) ->
+    true;
+equal([], _) ->
+    false;
+equal(_, []) ->
+    false;
+equal([H1|T1], [H2|T2]) ->
+    case H1 =:= H2 of
+        true -> equal(T1, T2);
+        false -> false
+    end.
+
+main([]) ->
+    ststd:putc("compare: you need to give two arguments as filenames");
+main([_|[]]) ->
+    ststd:putc("compare: can't compare a single file, two arguments needed");
+main([Arg1, Arg2|_]) ->
+    File1 = ststd:io({input, file}, Arg1),
+    File2 = ststd:io({input, file}, Arg2),
+    compare(File1, File2).
