@@ -7,13 +7,13 @@
 %% This way, `echo hello world!` and `./echo hello world!`
 %% will return the same input, confirmed by the diff tool.
 echo([]) ->
-io:format("~n");
+    io:format("~n");
 echo([H|[]]) ->
-io:format("~s", [H]),
-echo([]);
+    io:format("~s", [H]),
+    echo([]);
 echo([H|T]) ->
-io:format("~s ", [H]),
-echo(T).
+    io:format("~s ", [H]),
+    echo(T).
 
 main(Args) ->
-echo(Args).
+    echo(Args).

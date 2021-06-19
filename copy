@@ -14,16 +14,16 @@
 %% but when running from terminal as an escript program,
 %% you can pattern match Ctrl-D as eof.
 copy() ->
-Input = ststd:getc(),
-copy(Input).
+    Input = ststd:getc(),
+    copy(Input).
 
 copy(eof) ->
-{ok, eof};
+    {ok, eof};
 copy(".\n") ->
-{ok, eof};
+    {ok, eof};
 copy(Input) ->
-ststd:putc(Input),
-copy().
+    ststd:putc(Input),
+    copy().
 
 main(_) ->
-copy().
+    copy().

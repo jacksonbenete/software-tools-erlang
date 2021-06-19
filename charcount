@@ -2,15 +2,15 @@
 
 %% charcount -- count characters in standard input
 charcount() ->
-Input = ststd:getf(),
-charcount(Input, 0).
+    Input = ststd:getf(),
+    charcount(Input, 0).
 
 charcount(eof, Acc) ->
-ststd:putf("~w~n", [Acc]);
+    ststd:putf("~w~n", [Acc]);
 charcount([], Acc) ->
-charcount(eof, Acc);
+    charcount(eof, Acc);
 charcount([_|T], Acc) ->
-charcount(T, Acc + 1).
+    charcount(T, Acc + 1).
 
 main(_) ->
-charcount().
+    charcount().

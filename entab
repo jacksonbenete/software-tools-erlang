@@ -5,8 +5,8 @@
 %% We can't generate a list/array because we don't have a MAXLINE.
 %% settabs returns the TabSpace value instead.
 settabs() ->
-TabSpace = 4,
-TabSpace.
+    TabSpace = 4,
+    TabSpace.
 
 %% tabpos -- return true if col is a tab stop
 %%
@@ -15,8 +15,8 @@ TabSpace.
 %% io:get_chars/2 because the second parameter of the said
 %% function is exactly a limiter.
 tabpos(Col) ->
-TabSpace = settabs(),
-TabSpace - Col rem TabSpace.
+    TabSpace = settabs(),
+    TabSpace - Col rem TabSpace.
 
 %% entab -- convert runs of blanks into tabs
 %%
@@ -26,26 +26,26 @@ TabSpace - Col rem TabSpace.
 %% at a tab stop. This behavior was considered a bug in Pascal,
 %% here it could be considered a bug to don't have such a bug.
 entab(Input) ->
-entab(Input, 0, []).
+    entab(Input, 0, []).
 
 entab([], _, Acc) ->
-ststd:putf("~p~n", [Acc]);
+    ststd:putf("~p~n", [Acc]);
 %% Blank/Whitespace = ASCII 32
 entab([32|T], Blanks, Acc) ->
-TabSize = settabs(),
-case Blanks =:= (TabSize - 1) of
-  true -> entab(T, 0, lists:concat([Acc, [9]]));
-  false -> entab(T, Blanks+1, Acc)
-end;
+    TabSize = settabs(),
+    case Blanks =:= (TabSize - 1) of
+        true -> entab(T, 0, lists:concat([Acc, [9]]));
+        false -> entab(T, Blanks+1, Acc)
+    end;
 entab([H|T], Blanks, Acc) ->
-Seq = lists:seq(1, Blanks),
-BlanksList = lists:map(fun(_) -> 32 end, Seq),
-entab(T, 0, lists:concat([Acc, BlanksList, [H]])).
+    Seq = lists:seq(1, Blanks),
+    BlanksList = lists:map(fun(_) -> 32 end, Seq),
+    entab(T, 0, lists:concat([Acc, BlanksList, [H]])).
 
 main([]) ->
-Input = ststd:getf(),
-entab(Input);
+    Input = ststd:getf(),
+    entab(Input);
 main(Arg) ->
-{ok, Bin} = file:read_file(Arg),
-File = erlang:binary_to_file(Bin),
-entab(File).
+    {ok, Bin} = file:read_file(Arg),
+    File = erlang:binary_to_file(Bin),
+    entab(File).

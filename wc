@@ -5,34 +5,34 @@
 %% BUGS
 %% It doesn't print the name of the file as of yet.
 putwc(ArgList) ->
-ststd:putf(" ~w ~w ~w~n", ArgList).
+    ststd:putf(" ~w ~w ~w~n", ArgList).
 
 %% wc -- count words, lines and characters
 %%
 %% BUGS
 %% If Ctrl-D during a word, will not count word or curent line.
 wc() ->
-Input = ststd:getf(),
-wc(Input, false, 0, 0, 0).
+    Input = ststd:getf(),
+    wc(Input, false, 0, 0, 0).
 
 wc([], _, WC, LC, CC) ->
-putwc([LC, WC, CC]);
+    putwc([LC, WC, CC]);
 wc([H|T], inword, WC, LC, CC) ->
-  case lists:member(H, [9, 10, 32]) of
-    true when H =:= 10 -> wc(T, false, WC+1, LC+1, CC+1);
-    true -> wc(T, false, WC+1, LC, CC+1);
-    false -> wc(T, inword, WC, LC, CC+1)
-end;
+    case lists:member(H, [9, 10, 32]) of
+        true when H =:= 10 -> wc(T, false, WC+1, LC+1, CC+1);
+        true -> wc(T, false, WC+1, LC, CC+1);
+        false -> wc(T, inword, WC, LC, CC+1)
+    end;
 wc([H|T], _, WC, LC, CC) ->
-  case lists:member(H, [9, 10, 32]) of
-    true when H =:= 10 -> wc(T, false, WC, LC+1, CC+1);
-    true -> wc(T, false, WC, LC, CC+1);
-    false -> wc(T, inword, WC, LC, CC+1)
-end.
+    case lists:member(H, [9, 10, 32]) of
+        true when H =:= 10 -> wc(T, false, WC, LC+1, CC+1);
+        true -> wc(T, false, WC, LC, CC+1);
+        false -> wc(T, inword, WC, LC, CC+1)
+    end.
 
 main([]) ->
-wc();
+    wc();
 main(Arg) ->
-{ok, Bin} = file:read_file(Arg),
-File = erlang:binary_to_list(Bin),
-wc(File, false, 0, 0, 0).
+    {ok, Bin} = file:read_file(Arg),
+    File = erlang:binary_to_list(Bin),
+    wc(File, false, 0, 0, 0).

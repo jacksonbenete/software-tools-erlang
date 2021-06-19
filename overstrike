@@ -18,22 +18,22 @@
 %% a Ctrl-D in a new (empty) line will finish the
 %% program correctly.
 overstrike(Input) ->
-overstrike(Input, [], []).
+    overstrike(Input, [], []).
 
 overstrike([], [], Acc) ->
-file:write_file("tmp", erlang:list_to_binary(Acc)),
-ststd:putf("~p~n", [Acc]);
+    file:write_file("tmp", erlang:list_to_binary(Acc)),
+    ststd:putf("~p~n", [Acc]);
 overstrike([32|T], OverList, Acc) ->
-overstrike(T, lists:concat([OverList, [32]]), lists:concat([Acc, [32]]));
+    overstrike(T, lists:concat([OverList, [32]]), lists:concat([Acc, [32]]));
 overstrike([10|T], OverList, Acc) ->
-overstrike(T, [], lists:concat([Acc, [10], OverList, [10]]));
+    overstrike(T, [], lists:concat([Acc, [10], OverList, [10]]));
 overstrike([H|T], OverList, Acc) ->
-overstrike(T, lists:concat([OverList, "_"]), lists:concat([Acc, [H]])).
+    overstrike(T, lists:concat([OverList, "_"]), lists:concat([Acc, [H]])).
 
 main([]) ->
-Input = ststd:getf(),
-overstrike(Input);
+    Input = ststd:getf(),
+    overstrike(Input);
 main(Arg) ->
-{ok, Bin} = file:read_file(Arg),
-File = erlang:binary_to_list(Bin),
-overstrike(File).
+    {ok, Bin} = file:read_file(Arg),
+    File = erlang:binary_to_list(Bin),
+    overstrike(File).

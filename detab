@@ -5,8 +5,8 @@
 %% We can't generate a list/array because we don't have a MAXLINE.
 %% settabs returns the TabSpace value instead.
 settabs() ->
-TabSpace = 4,
-TabSpace.
+    TabSpace = 4,
+    TabSpace.
 
 %% tabpos -- return true if col is a tab stop
 %%
@@ -15,8 +15,8 @@ TabSpace.
 %% io:get_chars/2 because the second parameter of the said
 %% function is exactly a limiter.
 tabpos(Col) ->
-TabSpace = settabs(),
-TabSpace - Col rem TabSpace.
+    TabSpace = settabs(),
+    TabSpace - Col rem TabSpace.
 
 %% detab - convert tabs to blanks
 %%
@@ -27,22 +27,22 @@ TabSpace - Col rem TabSpace.
 %% Special characters other than 9, 10, 32 might transform
 %% the return string in numbers and screw everything.
 detab() ->
-Input = ststd:getf(),
-detab(Input, 0, []).
+    Input = ststd:getf(),
+    detab(Input, 0, []).
 
 detab([], _, Acc) ->
-ststd:putf("~p~n", [Acc]);
+    ststd:putf("~p~n", [Acc]);
 detab([9|T], Col, Acc) ->
-Feed = tabpos(Col),
-Blanks = lists:map(fun(_) -> 32 end, lists:seq(1, Feed)),
-detab(T, Col+Feed, lists:concat([Acc, Blanks]));
+    Feed = tabpos(Col),
+    Blanks = lists:map(fun(_) -> 32 end, lists:seq(1, Feed)),
+    detab(T, Col+Feed, lists:concat([Acc, Blanks]));
 detab([H|T], Col, Acc) ->
-detab(T, Col+1, lists:concat([Acc, [H]])).
+    detab(T, Col+1, lists:concat([Acc, [H]])).
 
 
 main([]) ->
-detab();
+    detab();
 main(Arg) ->
-{ok, Bin} = file:read_file(Arg),
-File = erlang:binary_to_list(Bin),
-detab(File, 0, []).
+    {ok, Bin} = file:read_file(Arg),
+    File = erlang:binary_to_list(Bin),
+    detab(File, 0, []).

@@ -5,17 +5,17 @@
 %% Since Erlang "String" is an array of numbers,
 %% We can detect "\n" as ASCII 10.
 linecount() ->
-Input = ststd:getf(),
-linecount(Input, 0).
+    Input = ststd:getf(),
+    linecount(Input, 0).
 
 linecount(eof, Acc) ->
-ststd:putf("~w~n", [Acc]);
+    ststd:putf("~w~n", [Acc]);
 linecount([], Acc) ->
-linecount(eof, Acc);
+    linecount(eof, Acc);
 linecount([10|T], Acc) ->
-linecount(T, Acc + 1);
+    linecount(T, Acc + 1);
 linecount([_|T], Acc) ->
-linecount(T, Acc).
+    linecount(T, Acc).
 
 main(_) ->
-linecount().
+    linecount().

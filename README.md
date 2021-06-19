@@ -4,7 +4,7 @@ This is an implementation of various Unix common tools, as taught on `Software T
 ## Important
 You need to compile `ststd.erl` first before trying any tools, as almost or all of them will make heavy use of functions like `getc` and `putc`.
 
-Source files are currently lacking indentation since I'm testing a Erlang code formater. It will soon be fixed.
+Indentation is made by a code formatter, if any file is lacking indentation I'm sorry, please notify me or PR.
 
 ## File Structure
 There are redundant files.

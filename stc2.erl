@@ -6,8 +6,8 @@
 %% We can't generate a list/array because we don't have a MAXLINE.
 %% settabs returns the TabSpace value instead.
 settabs() ->
-TabSpace = 4,
-TabSpace.
+    TabSpace = 4,
+    TabSpace.
 
 %% tabpos -- return true if col is a tab stop
 %%
@@ -16,8 +16,8 @@ TabSpace.
 %% io:get_chars/2 because the second parameter of the said
 %% function is exactly a limiter.
 tabpos(Col) ->
-TabSpace = settabs(),
-TabSpace - Col rem TabSpace.
+    TabSpace = settabs(),
+    TabSpace - Col rem TabSpace.
 
 %% entab -- convert runs of blanks into tabs
 %%
@@ -27,21 +27,21 @@ TabSpace - Col rem TabSpace.
 %% at a tab stop. This behavior was considered a bug in Pascal,
 %% here it could be considered a bug to don't have such a bug.
 entab(Input) ->
-entab(Input, 0, []).
+    entab(Input, 0, []).
 
 entab([], _, Acc) ->
-ststd:putf("~p~n", [Acc]);
+    ststd:putf("~p~n", [Acc]);
 %% Blank/Whitespace = ASCII 32
 entab([32|T], Blanks, Acc) ->
-TabSize = settabs(),
-case Blanks =:= (TabSize - 1) of
-  true -> entab(T, 0, lists:concat([Acc, [9]]));
-  false -> entab(T, Blanks+1, Acc)
-end;
+    TabSize = settabs(),
+    case Blanks =:= (TabSize - 1) of
+        true -> entab(T, 0, lists:concat([Acc, [9]]));
+        false -> entab(T, Blanks+1, Acc)
+    end;
 entab([H|T], Blanks, Acc) ->
-Seq = lists:seq(1, Blanks),
-BlanksList = lists:map(fun(_) -> 32 end, Seq),
-entab(T, 0, lists:concat([Acc, BlanksList, [H]])).
+    Seq = lists:seq(1, Blanks),
+    BlanksList = lists:map(fun(_) -> 32 end, Seq),
+    entab(T, 0, lists:concat([Acc, BlanksList, [H]])).
 
 %% overstrike -- replace overstrikes by multiple lines
 %%
@@ -61,17 +61,17 @@ entab(T, 0, lists:concat([Acc, BlanksList, [H]])).
 %% a Ctrl-D in a new (empty) line will finish the
 %% program correctly.
 overstrike(Input) ->
-overstrike(Input, [], []).
+    overstrike(Input, [], []).
 
 overstrike([], [], Acc) ->
-file:write_file("tmp", erlang:list_to_binary(Acc)),
-ststd:putf("~p~n", [Acc]);
+    file:write_file("tmp", erlang:list_to_binary(Acc)),
+    ststd:putf("~p~n", [Acc]);
 overstrike([32|T], OverList, Acc) ->
-overstrike(T, lists:concat([OverList, [32]]), lists:concat([Acc, [32]]));
+    overstrike(T, lists:concat([OverList, [32]]), lists:concat([Acc, [32]]));
 overstrike([10|T], OverList, Acc) ->
-overstrike(T, [], lists:concat([Acc, [10], OverList, [10]]));
+    overstrike(T, [], lists:concat([Acc, [10], OverList, [10]]));
 overstrike([H|T], OverList, Acc) ->
-overstrike(T, lists:concat([OverList, "_"]), lists:concat([Acc, [H]])).
+    overstrike(T, lists:concat([OverList, "_"]), lists:concat([Acc, [H]])).
 
 %% compress -- compress standard input
 %%
@@ -85,20 +85,20 @@ overstrike(T, lists:concat([OverList, "_"]), lists:concat([Acc, [H]])).
 %% Runs longer than 26 character aren't being broken into sev.
 %% shorter ones, but this should be easy to correct.
 compress(Input) ->
-compress(Input, [], 0, []).
+    compress(Input, [], 0, []).
 
 compress([], Char, Count, Acc) ->
-StateList = putrep(Char, Count),
-Result = lists:concat([Acc, StateList]),
-ststd:putf("~p~n", [Result]);
+    StateList = putrep(Char, Count),
+    Result = lists:concat([Acc, StateList]),
+    ststd:putf("~p~n", [Result]);
 compress([126|T], Char, Count, Acc) ->
-% ~ it's a run of itself of lenght 1
-StateList = putrep(Char, Count),
-compress(T, [], 0, lists:concat([Acc, StateList, [126, 65, 126]]));
+                                                % ~ it's a run of itself of lenght 1
+    StateList = putrep(Char, Count),
+    compress(T, [], 0, lists:concat([Acc, StateList, [126, 65, 126]]));
 compress([H|T], Char, Count, Acc) when H =/= Char ->
-compress(T, H, 1, lists:concat([Acc, putrep(Char, Count)]));
+    compress(T, H, 1, lists:concat([Acc, putrep(Char, Count)]));
 compress([_|T], Char, Count, Acc) ->
-compress(T, Char, Count+1, Acc).
+    compress(T, Char, Count+1, Acc).
 
 %% putrep -- put out representations of run of n 'c's
 %%
@@ -106,35 +106,35 @@ compress(T, Char, Count+1, Acc).
 %% This one isn't a exactly copy of the Pascal version.
 %% This should use a constant instead of the escaping value 126.
 putrep(Char, Count) ->
-case Count >= thresh() of
-  true -> [126, init_symbol() + Count, Char];
-  false -> lists:map(fun(_) -> Char end, lists:seq(1, Count))
-end.
+    case Count >= thresh() of
+        true -> [126, init_symbol() + Count, Char];
+        false -> lists:map(fun(_) -> Char end, lists:seq(1, Count))
+    end.
 
 %% init_symbol -- get the firs symbol for count repetitions
 %%
 %% This is a abstraction instead of using letter 'A' directly.
 init_symbol() ->
-Symbol = 64,  % ASCII 64 = @, next one is 'A'
-Symbol.
+    Symbol = 64,  % ASCII 64 = @, next one is 'A'
+    Symbol.
 
 %% thresh -- return the threshold for repetitions to compress
 thresh() ->
-Threshold = 4,
-Threshold.
+    Threshold = 4,
+    Threshold.
 
 %% expand -- uncompress standard input
 %%
 %% We had to put guards ranging from 65 to 122, or else
 %% the conversion starts to fail on lists:seq/2 logic.
 expand(Input) ->
-Base = init_symbol(),
-expand(Input, Base, []).
+    Base = init_symbol(),
+    expand(Input, Base, []).
 
 expand([], _, Acc) ->
-ststd:putf("~p~n", [Acc]);
+    ststd:putf("~p~n", [Acc]);
 expand([126, Count, Char|T], Base, Acc) when Count >= 65 andalso Count =< 122 ->
-Finding = lists:map(fun(_) -> Char end, lists:seq(1, Count - Base)),
-expand(T, Base, lists:concat([Acc, Finding]));
+    Finding = lists:map(fun(_) -> Char end, lists:seq(1, Count - Base)),
+    expand(T, Base, lists:concat([Acc, Finding]));
 expand([H|T], Base, Acc) ->
-expand(T, Base, lists:concat([Acc, [H]])).
+    expand(T, Base, lists:concat([Acc, [H]])).
