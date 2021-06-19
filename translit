@@ -7,7 +7,7 @@ Map = mpattern(FromSet, ToSet),
 translit(File, Map, []).
 
 translit([], _, Acc) ->
-iotype({output, file, Acc});
+ststd:io({output, file}, Acc);
 translit([H|T], Map, Acc) ->
 case maps:find(H, Map) of
   {ok, Change} -> translit(T, Map, lists:concat([Acc, [Change]]));
@@ -47,18 +47,6 @@ List = lists:seq(Base, End),
 Tail = parse(T),
 lists:concat([List, Tail]).
 
-%% iotype -- abstract input type from File argument
-%%
-%% BUGS
-%% If file (Name) doesn't exists, will fail and might scream.
-iotype({file, Name}) ->
-case file:read_file(Name) of
-  {ok, Bin} -> erlang:binary_to_list(Bin);
-  {error, enoent} -> {error, enoent}
-end;
-iotype({output, file, Acc}) ->
-Bin = erlang:list_to_binary(Acc),
-file:write_file("output", Bin).
 
 %% main -- receive and parse args
 main([]) ->
@@ -72,7 +60,7 @@ halt(1);
 %% one pattern means to delete all occurrences on file
 main([Arg, File|[]]) ->
 FromSet = parse(Arg),
-Input = iotype({file, File}),
+Input = ststd:io({input, file}, File),
 deleteall([FromSet, Input]);
 
 %% Arg1 = pattern (fromset)
@@ -82,7 +70,7 @@ main([Arg1, Arg2, File|[]]) ->
 FromSet = parse(Arg1),
 ToSet = parse(Arg2),
 %io:format("FromSet: ~p~nToSet: ~p", [FromSet, ToSet]),  % debug
-Input = iotype({file, File}),
+Input = ststd:io({input, file}, File),
 selector(FromSet, ToSet, Input).
 
 %% transliterate characters from Arg1[i] to Arg2[i]
