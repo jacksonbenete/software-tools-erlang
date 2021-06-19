@@ -9,7 +9,7 @@ wc() ->
     wc(Input, false, 0, 0, 0).
 
 wc([], _, WC, LC, CC) ->
-[LC, WC, CC];
+    [LC, WC, CC];
 wc([H|T], inword, WC, LC, CC) ->
     case lists:member(H, [9, 10, 32]) of
         true when H =:= 10 -> wc(T, false, WC+1, LC+1, CC+1);
@@ -28,5 +28,5 @@ main([]) ->
 main(Arg) ->
     {ok, Bin} = file:read_file(Arg),
     File = erlang:binary_to_list(Bin),
-Ret = wc(File, false, 0, 0, 0),
-ststd:putf(" ~w ~w ~w ~s~n", Ret++Arg).
+    Ret = wc(File, false, 0, 0, 0),
+    ststd:putf(" ~w ~w ~w ~s~n", Ret++Arg).
