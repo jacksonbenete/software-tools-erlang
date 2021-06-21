@@ -18,3 +18,7 @@ All the tools will be provided as escript as well, when possible, to accept comm
 
 ## Todo
 - translit still needs to implement `^` (all but), and `@` (escape characters). Shouldn't be difficult but might need another approach than maps.
+- print (3.6 Multi-stage Processing: Pipelines)
+- makecopy (3.7 Creating Files Dinamically)
+- archive (3.8 Putting it All Together: archive)
+- sorting methods (the entire chapter 4)
