@@ -1,0 +1,21 @@
+#!/usr/bin/escript
+
+%% this is the pascal code diagram
+%% --
+%% find
+%%   getpat
+%%     makepat
+%%       getccl
+%%         dodash
+%%       stclose
+%%   match
+%%     amatch
+%%       omatch
+%%         locate
+%%       patsize
+
+%% find -- find patterns in text
+
+
+main([Pattern, File|_]) ->
+ok.
