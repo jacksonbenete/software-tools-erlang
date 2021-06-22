@@ -28,6 +28,8 @@ amatch(Line, Pattern) ->
 
 amatch([], _, _, PosList) ->
     PosList;
+amatch({[], []}, {_, []}, Pos, PosList) ->
+    lists:concat([PosList, [Pos]]);
 amatch({[], []}, _, _, PosList) ->
     PosList;
 
@@ -59,7 +61,9 @@ main(["-t"|_]) ->
 test() ->
     [3, 6, 12] = match("This is a line", [$i]),
     [6] = match("Two letters", "et"),
+    [1,2,3,4,5,6] = match("aaaaaa", "a"),
     [1,2,3,4,5] = match("aaaaaa", "aa"),
+    [] = match("this is a single input", "z"),
     ok.
 
 debug(Arg) ->
