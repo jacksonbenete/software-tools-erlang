@@ -126,6 +126,18 @@ test() ->
     true = match("?t?", AnyInput),
     [2, 11] = amatch("?t?", AnyInput),
 
+%% test 5 -- % beginning of line
+true = match("%abc", "abcc"),
+true = match("^", "abc"),
+true = match("^?", "abc"),
+true = match("^a?", "abc"),
+true = match("^a?c", "abc"),
+false = match("^a?b", "abc"),
+false = match("^bc", "abc"),
+false = match("^?c", "abc"),
+true = match("^?b", "abc"),
+false = match("^b", [$a, $\n, $b, $\n, $c]),
+
     ok.
 
 debug(Arg) ->
