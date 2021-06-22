@@ -15,14 +15,28 @@
 %%       patsize
 
 %% find -- find patterns in text
-find(_) ->
-    ok.
+%%
+%% for each line, if a match is found, return line
+
+%% this is a mock version, should `getlines` first
+find(Input, Pattern) ->
+    case match(Input, Pattern) of
+        true -> Input;
+        false -> []
+    end.
 
 %% match -- find match anywhere on line
+%%
+%% returns true for match, false for mismatch
 match(Line, Pattern) ->
-    amatch(Line, Pattern).
+    case amatch(Line, Pattern) of
+        [] -> false;
+        _ -> true
+    end.
 
 %% amatch -- look for match of pattern at line
+%%
+%% returns the position of all matches as a list
 amatch(Line, Pattern) ->
     amatch(Line, {Pattern, Pattern}, 1, []).
 
@@ -42,7 +56,7 @@ amatch({InitT, [H|T]}, {Pattern, [PH|PT]}, Pos, PosList) ->
         false -> amatch(InitT, {Pattern, Pattern}, Pos+1, PosList)
     end;
 
-%% if a single match is find, will test a sequential match
+%% if a single match is found, will test a sequential match
 %% a single literal is a sequence of a literal + empty list,
 %% so we can reuse code from a sequence of literal characters
 amatch([H|T], {Pattern, [PH|PT]}, Pos, PosList) ->
@@ -58,13 +72,37 @@ main(["-t"|_]) ->
 
 %% test 1 -- lines are properly read and written
 %% test 2 -- find single character 'x' in text
+%% test 3 -- match returns true or false
 test() ->
-    [3, 6, 12] = match("This is a line", [$i]),
-    [6] = match("Two letters", "et"),
-    [1,2,3,4,5,6] = match("aaaaaa", "a"),
-    [1,2,3,4,5] = match("aaaaaa", "aa"),
-    [] = match("this is a single input", "z"),
+    Input1 = "This is a single input.",
+    Input1 = find(Input1, "i"),
+    [] = find(Input1, "z"),
+
+    [] = amatch("this is a single input", "z"),
+
+    [3, 6, 12] = amatch("This is a line", [$i]),
+    [1,2,3,4,5,6] = amatch("aaaaaa", "a"),
+
+    [6] = amatch("Two letters", "et"),
+    [1,2,3,4,5] = amatch("aaaaaa", "aa"),
+
+    true = match("Two letters", "et"),
+    false = match("foo bar", "foobar"),
+
     ok.
 
 debug(Arg) ->
     ststd:putf("~w~n", [Arg]).
+
+%% TODO
+%%
+%% ? any character except newline
+%% % beginning of line
+%% $ end of line (null string before newline)
+%% [...] character class
+%% [^...] negated character class
+%% * closure (zero or more occurrences of previous pattern)
+%%
+%% @c escaped character (@%, @[, @*, @^, @-, @@, @])
+%% an escape sequence consist of @n (newline), @t (tab)
+%% or @c (escaped character)
