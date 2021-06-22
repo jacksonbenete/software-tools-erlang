@@ -37,6 +37,9 @@ match(Line, Pattern) ->
 %% amatch -- look for match of pattern at line
 %%
 %% returns the position of all matches as a list
+%%
+%% General cases should be lower in order, metacharacters and classes 
+%% need to check pattern matching first.
 amatch(Line, Pattern) ->
     amatch(Line, {Pattern, Pattern}, 1, []).
 
@@ -46,6 +49,19 @@ amatch({[], []}, {_, []}, Pos, PosList) ->
     lists:concat([PosList, [Pos]]);
 amatch({[], []}, _, _, PosList) ->
     PosList;
+
+%% ? -- match any single character except newline
+%% if ? = 10 = newline, will be a mismatch
+amatch([H|T], {Pattern, [PH|PT]}, Pos, PosList) when PH =:= $? ->
+    case H =/= 10 of
+        true -> amatch({T, T}, {Pattern, PT}, Pos, PosList);
+        false -> amatch(T, {Pattern, Pattern}, Pos+1, PosList)
+    end;
+amatch({InitT, [H|T]}, {Pattern, [PH|PT]}, Pos, PosList) when PH =:= $? ->
+    case H =/= 10 of
+        true -> amatch({InitT, T}, {Pattern, PT}, Pos, PosList);
+        false -> amatch(InitT, {Pattern, Pattern}, Pos+1, PosList)
+    end;
 
 %% sequence of literal characters
 amatch({InitT, _}, {Pattern, []}, Pos, PosList) ->
@@ -70,14 +86,14 @@ main([Pattern, File|_]) ->
 main(["-t"|_]) ->
     test().
 
-%% test 1 -- lines are properly read and written
-%% test 2 -- find single character 'x' in text
-%% test 3 -- match returns true or false
 test() ->
+    %% test 1 -- lines are properly read and written
     Input1 = "This is a single input.",
     Input1 = find(Input1, "i"),
     [] = find(Input1, "z"),
 
+    %% test 2 -- find single character 'x' in text
+    %%        -- find literal sequence 'xx' in text
     [] = amatch("this is a single input", "z"),
 
     [3, 6, 12] = amatch("This is a line", [$i]),
@@ -86,8 +102,29 @@ test() ->
     [6] = amatch("Two letters", "et"),
     [1,2,3,4,5] = amatch("aaaaaa", "aa"),
 
+    %% test 3 -- match returns true or false
     true = match("Two letters", "et"),
     false = match("foo bar", "foobar"),
+
+    %% test 4 -- ? matches any character except newline
+    true = match([32], "?"), % ASCII 32 = whitespace
+    true = match(" ", "?"),
+    false = match("", "?"),
+    true = match("aaa", "?"),
+    false = match([$\n], "?"),
+
+    AnyInput = "Match everything",
+    AnyRange = lists:seq(1, erlang:length(AnyInput)),
+
+    true = match(AnyInput, "?"),
+    false = match(AnyInput, "?z"),
+    AnyRange = amatch(AnyInput, "?"),
+    AnyRange = amatch(AnyInput++[$\n], "?"),
+    [2, 11, 18, 27] = amatch(AnyInput++AnyInput, "?t"),
+    [2, 11, 19, 28] = amatch(AnyInput++[$\n]++AnyInput, "?t"),
+
+    true = match(AnyInput, "?t?"),
+    [2, 11] = amatch(AnyInput, "?t?"),
 
     ok.
 
@@ -96,7 +133,6 @@ debug(Arg) ->
 
 %% TODO
 %%
-%% ? any character except newline
 %% % beginning of line
 %% $ end of line (null string before newline)
 %% [...] character class
