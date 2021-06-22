@@ -128,15 +128,20 @@ test() ->
 
 %% test 5 -- % beginning of line
 true = match("%abc", "abcc"),
-true = match("^", "abc"),
-true = match("^?", "abc"),
-true = match("^a?", "abc"),
-true = match("^a?c", "abc"),
-false = match("^a?b", "abc"),
-false = match("^bc", "abc"),
-false = match("^?c", "abc"),
-true = match("^?b", "abc"),
-false = match("^b", [$a, $\n, $b, $\n, $c]),
+true = match("%", "abc"),
+true = match("%?", "abc"),
+true = match("%a?", "abc"),
+true = match("%a?c", "abc"),
+false = match("%a?b", "abc"),
+false = match("%bc", "abc"),
+false = match("%?c", "abc"),
+true = match("%?b", "abc"),
+false = match("%b", [$a, $\n, $b, $\n, $c]),
+
+[1] = amatch("%abc", "abcc"),
+[1] = amatch("%?", "abc"),
+[1] = amatch("%?b, "abc"),
+[] = amatch("%?c", "abc"),
 
     ok.
 
