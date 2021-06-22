@@ -16,51 +16,51 @@
 
 %% find -- find patterns in text
 find(_) ->
-ok.
+    ok.
 
 %% match -- find match anywhere on line
 match(Line, Pattern) ->
-amatch(Line, Pattern).
+    amatch(Line, Pattern).
 
 %% amatch -- look for match of pattern at line
 amatch(Line, Pattern) ->
-amatch(Line, {Pattern, Pattern}, 1, []).
+    amatch(Line, {Pattern, Pattern}, 1, []).
 
 amatch([], _, _, PosList) ->
-PosList;
+    PosList;
 amatch({[], []}, _, _, PosList) ->
-PosList;
+    PosList;
 
 %% sequence of literal characters
 amatch({InitT, _}, {Pattern, []}, Pos, PosList) ->
-amatch(InitT, {Pattern, Pattern}, Pos+1, lists:concat([PosList, [Pos]]));
+    amatch(InitT, {Pattern, Pattern}, Pos+1, lists:concat([PosList, [Pos]]));
 amatch({InitT, [H|T]}, {Pattern, [PH|PT]}, Pos, PosList) ->
-case H =:= PH of
-  true -> amatch({InitT, T}, {Pattern, PT}, Pos, PosList);
-  false -> amatch(InitT, {Pattern, Pattern}, Pos+1, PosList)
-end;
+    case H =:= PH of
+        true -> amatch({InitT, T}, {Pattern, PT}, Pos, PosList);
+        false -> amatch(InitT, {Pattern, Pattern}, Pos+1, PosList)
+    end;
 
 %% if a single match is find, will test a sequential match
 %% a single literal is a sequence of a literal + empty list,
 %% so we can reuse code from a sequence of literal characters
 amatch([H|T], {Pattern, [PH|PT]}, Pos, PosList) ->
-case H =:= PH of
-  true -> amatch({T, T}, {Pattern, PT}, Pos, PosList);
-  false -> amatch(T, {Pattern, Pattern}, Pos+1, PosList)
-end.
+    case H =:= PH of
+        true -> amatch({T, T}, {Pattern, PT}, Pos, PosList);
+        false -> amatch(T, {Pattern, Pattern}, Pos+1, PosList)
+    end.
 
 main([Pattern, File|_]) ->
-{Pattern, File};
+    {Pattern, File};
 main(["-t"|_]) ->
-test().
+    test().
 
 %% test 1 -- lines are properly read and written
 %% test 2 -- find single character 'x' in text
 test() ->
-[3, 6, 12] = match("This is a line", [$i]),
-[6] = match("Two letters", "et"),
-[1,2,3,4,5] = match("aaaaaa", "aa"),
-ok.
+    [3, 6, 12] = match("This is a line", [$i]),
+    [6] = match("Two letters", "et"),
+    [1,2,3,4,5] = match("aaaaaa", "aa"),
+    ok.
 
 debug(Arg) ->
-ststd:putf("~w~n", [Arg]).
+    ststd:putf("~w~n", [Arg]).
