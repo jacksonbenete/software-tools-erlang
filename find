@@ -43,12 +43,22 @@ match(Pattern, Line) ->
 amatch(Pattern, Line) ->
     amatch({Pattern, Pattern}, Line, 1, []).
 
+%% Test before base case for $ -- end of line
+amatch({Pattern, [PH|PT]}, [], Pos, PosList) when PH =:= $$ ->
+amatch({Pattern, PT}, {[], []}, Pos, PosList);
+
+%% Base cases
 amatch(_, [], _, PosList) ->
     PosList;
 amatch({_, []}, {[], []}, Pos, PosList) ->
     lists:concat([PosList, [Pos]]);
 amatch(_, {[], []}, _, PosList) ->
     PosList;
+
+%% $ -- match the end of line
+%% we detect the end of the line by an empty Head
+amatch({Pattern, [PH|_]}, {InitT, []}, Pos, PosList) when PH =:= $$ ->
+amatch({Pattern, Pattern}, InitT, Pos+1, lists:concat([PosList, [Pos]]));
 
 %% % -- match the beginning of line
 %% 1) if it's the beginning of line, keep position and
