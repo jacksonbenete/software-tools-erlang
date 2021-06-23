@@ -168,6 +168,16 @@ test() ->
     [1] = amatch("%?b", "abc"),
     [] = amatch("%?c", "abc"),
 
+%% test 6 -- $ end of line
+true = match("abc$", "abc"),
+true = match("$", "abc"),
+true = match("abc$", "aabc"),
+false = match("abc$", "aabcd"),
+
+true = match("%abc$", "abc"),
+false = match("%abc$", "abcc"),
+false = match("%abc$", "aabc"),
+
     ok.
 
 debug(Arg) ->
