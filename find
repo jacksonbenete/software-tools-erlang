@@ -50,6 +50,21 @@ amatch({_, []}, {[], []}, Pos, PosList) ->
 amatch(_, {[], []}, _, PosList) ->
     PosList;
 
+%% % -- match the beginning of line
+%% 1) if it's the beginning of line, keep position and
+%%    test sequentially starting from the same position
+%%    hence {[H|T], [H|T]} instead of {T, T}.
+%% 2) if isn't the beginning of line, go to next position and
+%%    test same pattern in Tail, it will obviously never match
+%%    since Tail isn't the beginning anymore.
+%%
+%% Further tests is needed for this behavior.
+amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $% ->
+    case Pos =:= 1 of
+        true -> amatch({Pattern, PT}, {[H|T], [H|T]}, Pos, PosList);
+        false -> amatch({Pattern, Pattern}, T, Pos+1, PosList)
+    end;
+
 %% ? -- match any single character except newline
 %% if ? = 10 = newline, will be a mismatch
 amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $? ->
@@ -126,22 +141,22 @@ test() ->
     true = match("?t?", AnyInput),
     [2, 11] = amatch("?t?", AnyInput),
 
-%% test 5 -- % beginning of line
-true = match("%abc", "abcc"),
-true = match("%", "abc"),
-true = match("%?", "abc"),
-true = match("%a?", "abc"),
-true = match("%a?c", "abc"),
-false = match("%a?b", "abc"),
-false = match("%bc", "abc"),
-false = match("%?c", "abc"),
-true = match("%?b", "abc"),
-false = match("%b", [$a, $\n, $b, $\n, $c]),
+    %% test 5 -- % beginning of line
+    true = match("%abc", "abcc"),
+    true = match("%", "abc"),
+    true = match("%?", "abc"),
+    true = match("%a?", "abc"),
+    true = match("%a?c", "abc"),
+    false = match("%a?b", "abc"),
+    false = match("%bc", "abc"),
+    false = match("%?c", "abc"),
+    true = match("%?b", "abc"),
+    false = match("%b", [$a, $\n, $b, $\n, $c]),
 
-[1] = amatch("%abc", "abcc"),
-[1] = amatch("%?", "abc"),
-[1] = amatch("%?b, "abc"),
-[] = amatch("%?c", "abc"),
+    [1] = amatch("%abc", "abcc"),
+    [1] = amatch("%?", "abc"),
+    [1] = amatch("%?b", "abc"),
+    [] = amatch("%?c", "abc"),
 
     ok.
 
@@ -150,7 +165,6 @@ debug(Arg) ->
 
 %% TODO
 %%
-%% % beginning of line
 %% $ end of line (null string before newline)
 %% [...] character class
 %% [^...] negated character class
