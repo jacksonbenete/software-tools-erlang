@@ -178,6 +178,16 @@ true = match("%abc$", "abc"),
 false = match("%abc$", "abcc"),
 false = match("%abc$", "aabc"),
 
+true = match("$", [$a, $\n, $b, $\n]),
+true = match("$", [$a, $\n, $b]),
+false = match("a$", [$a, $\n, $b, $\n]),
+true = match("a$", [$b, $\n, $a, $\n]),
+true = match("a$", [$b, $\n, $a]),
+
+false = match("aa$", [$a, $a, $\n, $b, $\n]),
+true = match("aa$", [$b, $\n, $a, $a, $\n]),
+true = match("aa$", [$b, $\n, $a, $a]),
+
     ok.
 
 debug(Arg) ->
