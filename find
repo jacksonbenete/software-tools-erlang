@@ -45,10 +45,10 @@ amatch(Pattern, Line) ->
 
 %% Test before base case for $ -- end of line
 amatch({Pattern, [PH|PT]}, [], Pos, PosList) when PH =:= $$ ->
-amatch({Pattern, PT}, {[], []}, Pos, PosList);
+    amatch({Pattern, PT}, {[], []}, Pos, PosList);
 amatch({Pattern, [PH|[]]}, {[], []}, Pos, PosList) when PH =:= $$ ->
-% test case example: true = match("a$", [$b, $\n, $a]),
-amatch({Pattern, Pattern}, [], Pos+1, lists:concat([PosList, [Pos]]));
+                                                % test case example: true = match("a$", [$b, $\n, $a]),
+    amatch({Pattern, Pattern}, [], Pos+1, lists:concat([PosList, [Pos]]));
 
 %% Base cases
 amatch(_, [], _, PosList) ->
@@ -61,13 +61,13 @@ amatch(_, {[], []}, _, PosList) ->
 %% $ -- match the end of line
 %% we detect the end of the line by an empty Head
 amatch({Pattern, [PH|_]}, {InitT, []}, Pos, PosList) when PH =:= $$ ->
-amatch({Pattern, Pattern}, InitT, Pos+1, lists:concat([PosList, [Pos]]));
+    amatch({Pattern, Pattern}, InitT, Pos+1, lists:concat([PosList, [Pos]]));
 %% if there is a endline as the last sequential match, it's a match
 amatch({Pattern, [PH|PT]}, {InitT, [$\n|T]}, Pos, PosList) when PH =:= $$ ->
-case T =:= [] of
-  true -> amatch({Pattern, PT}, {InitT, T}, Pos, PosList);
-  false -> amatch({Pattern, Pattern}, InitT, Pos+1, PosList)
-end;
+    case T =:= [] of
+        true -> amatch({Pattern, PT}, {InitT, T}, Pos, PosList);
+        false -> amatch({Pattern, Pattern}, InitT, Pos+1, PosList)
+    end;
 
 %% % -- match the beginning of line
 %% 1) if it's the beginning of line, keep position and
@@ -177,25 +177,25 @@ test() ->
     [1] = amatch("%?b", "abc"),
     [] = amatch("%?c", "abc"),
 
-%% test 6 -- $ end of line
-true = match("abc$", "abc"),
-true = match("$", "abc"),
-true = match("abc$", "aabc"),
-false = match("abc$", "aabcd"),
+    %% test 6 -- $ end of line
+    true = match("abc$", "abc"),
+    true = match("$", "abc"),
+    true = match("abc$", "aabc"),
+    false = match("abc$", "aabcd"),
 
-true = match("%abc$", "abc"),
-false = match("%abc$", "abcc"),
-false = match("%abc$", "aabc"),
+    true = match("%abc$", "abc"),
+    false = match("%abc$", "abcc"),
+    false = match("%abc$", "aabc"),
 
-true = match("$", [$a, $\n, $b, $\n]),
-true = match("$", [$a, $\n, $b]),
-false = match("a$", [$a, $\n, $b, $\n]),
-true = match("a$", [$b, $\n, $a, $\n]),
-true = match("a$", [$b, $\n, $a]),
+    true = match("$", [$a, $\n, $b, $\n]),
+    true = match("$", [$a, $\n, $b]),
+    false = match("a$", [$a, $\n, $b, $\n]),
+    true = match("a$", [$b, $\n, $a, $\n]),
+    true = match("a$", [$b, $\n, $a]),
 
-false = match("aa$", [$a, $a, $\n, $b, $\n]),
-true = match("aa$", [$b, $\n, $a, $a, $\n]),
-true = match("aa$", [$b, $\n, $a, $a]),
+    false = match("aa$", [$a, $a, $\n, $b, $\n]),
+    true = match("aa$", [$b, $\n, $a, $a, $\n]),
+    true = match("aa$", [$b, $\n, $a, $a]),
 
     ok.
 
