@@ -85,14 +85,13 @@ amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $% ->
     end;
 
 %% ? -- match any single character except newline
-%% if ? = 10 = newline, will be a mismatch
 amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $? ->
-    case H =/= 10 of
+    case H =/= $\n of
         true -> amatch({Pattern, PT}, {T, T}, Pos, PosList);
         false -> amatch({Pattern, Pattern}, T, Pos+1, PosList)
     end;
 amatch({Pattern, [PH|PT]}, {InitT, [H|T]}, Pos, PosList) when PH =:= $? ->
-    case H =/= 10 of
+    case H =/= $\n of
         true -> amatch({Pattern, PT}, {InitT, T}, Pos, PosList);
         false -> amatch({Pattern, Pattern}, InitT, Pos+1, PosList)
     end;
