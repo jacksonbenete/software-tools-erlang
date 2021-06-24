@@ -87,6 +87,9 @@ amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $% ->
 
 %% [^...] -- match character "not in" class
 %% i.e. [^a-z] matches everything that it's not a lower case letter
+amatch({Pattern, [$[, $^, $]|PT]}, Line, Pos, PosList) ->
+amatch({Pattern, PT, {parse, not_class, [$]]}}, Line, Pos, PosList);
+
 amatch({Pattern, [$[, $^|PT]}, Line, Pos, PosList) ->
 amatch({Pattern, PT, {parse, not_class, []}}, Line, Pos, PosList);
 
