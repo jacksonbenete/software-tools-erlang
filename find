@@ -89,13 +89,21 @@ amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $% ->
 amatch({Pattern, [$[|PT]}, Line, Pos, PosList) ->
 amatch({Pattern, PT, {parse_class, []}}, Line, Pos, PosList);
 
+amatch({Pattern, [$], $]|PT], {parse_class, Class}}, Line, Pos, PosList) ->
+NewClass = lists:concat([Class, "]"]),
+amatch({Pattern, PT, {class, NewClass}}, Line, Pos, PosList);
 amatch({Pattern, [$]|PT], {parse_class, Class}}, Line, Pos, PosList) ->
 amatch({Pattern, PT, {class, Class}}, Line, Pos, PosList);
+
+amatch({Pattern, [C1, $-, $]|PT], {parse_class, Class}}, Line, Pos, PosList) ->
+NewClass = lists:concat([Class, [C1, $-]]),  % case for not-ranged dash i.e. [b-]
+amatch({Pattern, [$]|PT], {parse_class, NewClass}}, Line, Pos, PosList);
+
 amatch({Pattern, [C1, $-, C2|PT], {parse_class, Class}}, Line, Pos, PosList) ->
 NewClass = lists:concat([Class, lists:seq(C1, C2)]),
 amatch({Pattern, PT, {parse_class, NewClass}}, Line, Pos, PosList);
 amatch({Pattern, [PH|PT], {parse_class, Class}}, Line, Pos, PosList) ->
-NewClass = lists:concat([Class, PH]), % case for a single char i.e. [a], [ab], [a-zb]
+NewClass = lists:concat([Class, [PH]]), % case for a single char i.e. [a], [ab], [a-zb]
 amatch({Pattern, PT, {parse_class, NewClass}}, Line, Pos, PosList);
 
 amatch({Pattern, PT, {class, Class}}, [H|T], Pos, PosList) ->
@@ -238,9 +246,9 @@ true = match("a[b-]", "a-"),  % means "b or dash"
 %% TODO -- are those cases correct?
 false = match("[b-a]", "-"),  % should return error (perl) but will behave as empty class
 false = match("a[]b", "-"),  % should return error (perl), but will behave as empty class
-%%false = match("a[", "-"),  % should return error (perl), unknown behavior (not covered)
-%%true = match("a]", "a]"),
-%% true = match("a[]]b", "a]b"),  % case isn't covered yet
+false = match("a[", "-"),  % should return error (perl), unknown behavior (not covered)
+true = match("a]", "a]"),
+ true = match("a[]]b", "a]b"),  % case isn't covered yet
 
     ok.
 
