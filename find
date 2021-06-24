@@ -46,6 +46,9 @@ amatch(Pattern, Line) ->
 %% Test before base case for $ -- end of line
 amatch({Pattern, [PH|PT]}, [], Pos, PosList) when PH =:= $$ ->
 amatch({Pattern, PT}, {[], []}, Pos, PosList);
+amatch({Pattern, [PH|[]]}, {[], []}, Pos, PosList) when PH =:= $$ ->
+% test case example: true = match("a$", [$b, $\n, $a]),
+amatch({Pattern, Pattern}, [], Pos+1, lists:concat([PosList, [Pos]]));
 
 %% Base cases
 amatch(_, [], _, PosList) ->
@@ -59,6 +62,12 @@ amatch(_, {[], []}, _, PosList) ->
 %% we detect the end of the line by an empty Head
 amatch({Pattern, [PH|_]}, {InitT, []}, Pos, PosList) when PH =:= $$ ->
 amatch({Pattern, Pattern}, InitT, Pos+1, lists:concat([PosList, [Pos]]));
+%% if there is a endline as the last sequential match, it's a match
+amatch({Pattern, [PH|PT]}, {InitT, [$\n|T]}, Pos, PosList) when PH =:= $$ ->
+case T =:= [] of
+  true -> amatch({Pattern, PT}, {InitT, T}, Pos, PosList);
+  false -> amatch({Pattern, Pattern}, InitT, Pos+1, PosList)
+end;
 
 %% % -- match the beginning of line
 %% 1) if it's the beginning of line, keep position and
@@ -195,7 +204,6 @@ debug(Arg) ->
 
 %% TODO
 %%
-%% $ end of line (null string before newline)
 %% [...] character class
 %% [^...] negated character class
 %% * closure (zero or more occurrences of previous pattern)
