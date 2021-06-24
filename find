@@ -230,6 +230,7 @@ test() ->
     true = match("aa$", [$b, $\n, $a, $a]),
 
 %% test 7 - character class
+false = match("[k]", "ab"),
 false = match("a[bc]d", "abc"),
 true = match("a[bc]d", "abd"),
 true = match("a[b]d", "abd"),
@@ -248,7 +249,18 @@ false = match("[b-a]", "-"),  % should return error (perl) but will behave as em
 false = match("a[]b", "-"),  % should return error (perl), but will behave as empty class
 false = match("a[", "-"),  % should return error (perl), unknown behavior (not covered)
 true = match("a]", "a]"),
- true = match("a[]]b", "a]b"),  % case isn't covered yet
+ true = match("a[]]b", "a]b"),  
+
+true = match("a[a-cz]", "ab"),
+true = match("a[a-cz]", "az"),
+false = match("a[a-cz]", "ad"),
+true = match("[a-zA-Z_][a-zA-Z0-9_]", "alpha"),
+false = match("[_A-Z]", "}"),
+true = match("[89]", "9"),
+true = match("[3-6]", "5"),
+false = match("[1-57-9]", "6"),
+true = match("[1-57-9]", "4"),
+true = match("[1-57-9]", "9"),
 
     ok.
 
