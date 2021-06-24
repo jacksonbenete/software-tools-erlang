@@ -84,6 +84,12 @@ amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $% ->
         false -> amatch({Pattern, Pattern}, T, Pos+1, PosList)
     end;
 
+
+%% [^...] -- match character "not in" class
+%% i.e. [^a-z] matches everything that it's not a lower case letter
+amatch({Pattern, [$[, $^|PT]}, Line, Pos, PosList) ->
+amatch({Pattern, PT, {parse, not_class, []}}, Line, Pos, PosList);
+
 %% [...] -- match character class
 %% i.e. [a-z], [A-Z], [a-zA-Z], [0-9], [0-9a-zA-Z]
 amatch({Pattern, [$[|PT]}, Line, Pos, PosList) ->
@@ -111,8 +117,18 @@ amatch({Pattern, PT, {class, in_class, Class}}, [H|T], Pos, PosList) ->
         true -> amatch({Pattern, PT}, {T, T}, Pos, PosList);
         false -> amatch({Pattern, Pattern}, T, Pos+1, PosList)
     end;
+amatch({Pattern, PT, {class, not_class, Class}}, [H|T], Pos, PosList) ->
+    case not lists:member(H, Class) of
+        true -> amatch({Pattern, PT}, {T, T}, Pos, PosList);
+        false -> amatch({Pattern, Pattern}, T, Pos+1, PosList)
+    end;
 amatch({Pattern, PT, {class, in_class, Class}}, {InitT, [H|T]}, Pos, PosList) ->
     case lists:member(H, Class) of
+        true -> amatch({Pattern, PT}, {InitT, T}, Pos, PosList);
+        false -> amatch({Pattern, Pattern}, InitT, Pos+1, PosList)
+    end;
+amatch({Pattern, PT, {class, not_class, Class}}, {InitT, [H|T]}, Pos, PosList) ->
+    case not lists:member(H, Class) of
         true -> amatch({Pattern, PT}, {InitT, T}, Pos, PosList);
         false -> amatch({Pattern, Pattern}, InitT, Pos+1, PosList)
     end;
