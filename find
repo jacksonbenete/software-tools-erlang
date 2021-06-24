@@ -293,7 +293,6 @@ test() ->
 
 %% TODO
 %%
-%% [^...] negated character class
 %% * closure (zero or more occurrences of previous pattern)
 %%
 %% @c escaped character (@%, @[, @*, @^, @-, @@, @])
