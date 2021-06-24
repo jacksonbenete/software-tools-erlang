@@ -264,9 +264,6 @@ test() ->
 
     ok.
 
-debug(Arg) ->
-    ststd:putf("~w~n", [Arg]).
-
 %% TODO
 %%
 %% [^...] negated character class
