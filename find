@@ -88,10 +88,10 @@ amatch({Pattern, [PH|PT]}, [H|T], Pos, PosList) when PH =:= $% ->
 %% [^...] -- match character "not in" class
 %% i.e. [^a-z] matches everything that it's not a lower case letter
 amatch({Pattern, [$[, $^, $]|PT]}, Line, Pos, PosList) ->
-amatch({Pattern, PT, {parse, not_class, [$]]}}, Line, Pos, PosList);
+    amatch({Pattern, PT, {parse, not_class, [$]]}}, Line, Pos, PosList);
 
 amatch({Pattern, [$[, $^|PT]}, Line, Pos, PosList) ->
-amatch({Pattern, PT, {parse, not_class, []}}, Line, Pos, PosList);
+    amatch({Pattern, PT, {parse, not_class, []}}, Line, Pos, PosList);
 
 %% [...] -- match character class
 %% i.e. [a-z], [A-Z], [a-zA-Z], [0-9], [0-9a-zA-Z]
@@ -281,13 +281,13 @@ test() ->
     true = match("[1-57-9]", "4"),
     true = match("[1-57-9]", "9"),
 
-%% test 8 - "not in" character class
-true = match("a[^bc]d", "aed"),
-false = match("a[^bc]d", "abd"),
-true = match("a[^-b]c", "adc"),
-false = match("a[^-b]c", "a-c"),
-false = match("a[^]b]c", "a]c"),
-true = match("a[^]b]c", "adc"),
+    %% test 8 - "not in" character class
+    true = match("a[^bc]d", "aed"),
+    false = match("a[^bc]d", "abd"),
+    true = match("a[^-b]c", "adc"),
+    false = match("a[^-b]c", "a-c"),
+    false = match("a[^]b]c", "a]c"),
+    true = match("a[^]b]c", "adc"),
 
     ok.
 
