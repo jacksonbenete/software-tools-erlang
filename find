@@ -278,6 +278,14 @@ test() ->
     true = match("[1-57-9]", "4"),
     true = match("[1-57-9]", "9"),
 
+%% test 8 - "not in" character class
+true = match("a[^bc]d", "aed"),
+false = match("a[^bc]d", "abd"),
+true = match("a[^-b]c", "adc"),
+false = match("a[^-b]c", "a-c"),
+false = match("a[^]b]c", "a]c"),
+true = match("a[^]b]c", "adc"),
+
     ok.
 
 %% TODO
