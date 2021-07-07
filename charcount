@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% charcount -- count characters in standard input
 charcount() ->

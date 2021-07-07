@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% include -- replace #include "file" by contents of file
 %%

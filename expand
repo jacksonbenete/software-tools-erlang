@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% init_symbol -- get the firs symbol for count repetitions
 %%

@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% compare (simple version) -- compare two files for equality
 compare(File1, File2) ->

@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% echo -- echo command line arguments to output
 %%

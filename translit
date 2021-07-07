@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% translit -- map characters
 translit([FromSet, ToSet, File]) ->

@@ -1,4 +1,4 @@
-#!/usr/bin/escript
+#!/usr/bin/env escript
 
 %% overstrike -- replace overstrikes by multiple lines
 %%
