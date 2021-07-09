@@ -27,7 +27,7 @@ wordcount([H|T], _, Acc) ->
     end.
 
 main([]) ->
-wordcount();
+    wordcount();
 main(Arg) ->
-File = ststd:io({input, file}, Arg),
-wordcount(File, false, 0).
+    File = ststd:io({input, file}, Arg),
+    wordcount(File, false, 0).

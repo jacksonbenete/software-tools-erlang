@@ -18,7 +18,7 @@ linecount([_|T], Acc) ->
     linecount(T, Acc).
 
 main([]) ->
-linecount();
+    linecount();
 main(Arg) ->
-File = ststd:io({input, file}, Arg),
-linecount(File, 0).
+    File = ststd:io({input, file}, Arg),
+    linecount(File, 0).
