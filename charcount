@@ -12,5 +12,8 @@ charcount([], Acc) ->
 charcount([_|T], Acc) ->
     charcount(T, Acc + 1).
 
-main(_) ->
-    charcount().
+main([]) ->
+charcount();
+main(Arg) ->
+File = ststd:io({input, file}, Arg),
+charcount(File, 0).
