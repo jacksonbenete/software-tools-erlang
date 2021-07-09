@@ -17,7 +17,7 @@ compress(Input) ->
 compress([], Char, Count, Acc) ->
     StateList = putrep(Char, Count),
     Result = lists:concat([Acc, StateList]),
-    ststd:putf("~p~n", [Result]);
+    ststd:putf("~s", [Result]);
 compress([126|T], Char, Count, Acc) ->
                                                 % ~ it's a run of itself of lenght 1
     StateList = putrep(Char, Count),
