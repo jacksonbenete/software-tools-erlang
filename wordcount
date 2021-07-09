@@ -26,5 +26,8 @@ wordcount([H|T], _, Acc) ->
         false -> wordcount(T, inword, Acc)
     end.
 
-main(_) ->
-    wordcount().
+main([]) ->
+wordcount();
+main(Arg) ->
+File = ststd:io({input, file}, Arg),
+wordcount(File, false, 0).
